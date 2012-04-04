@@ -277,7 +277,15 @@ class DoctrineMongoDBLogger
             } elseif ($value instanceof \stdClass) {
                 $formatted = static::bsonEncode((array) $value);
             } else {
-                $formatted = (string) $value;
+				try {
+					$formatted = (string) $value;
+				} catch (\ErrorException $ex) {
+					if (is_object($value)) {
+						$formatted = "instanceOf " . get_class($value);
+					} else {
+						$formatted = "(unknown instance)";
+					}
+				}
             }
 
             $parts['"'.$key.'"'] = $formatted;
